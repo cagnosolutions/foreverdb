@@ -1,4 +1,4 @@
-package index
+package doc
 
 import "sync"
 
@@ -12,7 +12,7 @@ var (
 	zd  d
 	zde de
 	ze  Enumerator
-	zk  []byte
+	zk  uint
 	zt  Tree
 	zx  x
 	zxe xe
@@ -51,7 +51,7 @@ func (p *btTpool) get(cmp Cmp) *Tree {
 
 type btEpool struct{ sync.Pool }
 
-func (p *btEpool) get(err error, hit bool, i int, k []byte, q *d, t *Tree, ver int64) *Enumerator {
+func (p *btEpool) get(err error, hit bool, i int, k uint, q *d, t *Tree, ver int64) *Enumerator {
 	x := p.Get().(*Enumerator)
 	x.err, x.hit, x.i, x.k, x.q, x.t, x.ver = err, hit, i, k, q, t, ver
 	return x

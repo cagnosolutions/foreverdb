@@ -1,12 +1,19 @@
 package foreverdb
 
-import "sync"
+import (
+	"encoding/json"
+	"sync"
+
+	"github.com/cagnosolutions/foreverdb/index"
+)
 
 const mb = 1 << 20
 
 type Store struct {
 	name string
 	io   *Serializer
+	docs map[uint]json.RawMessage
+	idxs *index.Tree
 	sync.RWMutex
 }
 

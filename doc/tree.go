@@ -1,4 +1,4 @@
-package index
+package doc
 
 import "io"
 
@@ -13,7 +13,7 @@ import "io"
 		return 0
 	}
 */
-type Cmp func(a, b []byte) int
+type Cmp func(a, b uint) int
 
 // b+tree veriant
 type Tree struct {
@@ -111,7 +111,7 @@ func (t *Tree) catX(p, q, r *x, pi int) {
 
 // Delete removes the k's KV pair, if it exists, in which case Delete returns
 // true.
-func (t *Tree) Delete(k []byte) (ok bool) {
+func (t *Tree) Delete(k uint) (ok bool) {
 	pi := -1
 	var p *x
 	q := t.r
@@ -162,7 +162,7 @@ func (t *Tree) Delete(k []byte) (ok bool) {
 	}
 }
 
-func (t *Tree) extract(q *d, i int) { // (r []byte) {
+func (t *Tree) extract(q *d, i int) { // (r Doc) {
 	t.ver++
 	//r = q.d[i].v // prepared for Extract
 	q.c--
@@ -174,8 +174,8 @@ func (t *Tree) extract(q *d, i int) { // (r []byte) {
 	return
 }
 
-func (t *Tree) find(q interface{}, k []byte) (i int, ok bool) {
-	var mk []byte
+func (t *Tree) find(q interface{}, k uint) (i int, ok bool) {
+	var mk uint
 	l := 0
 	switch x := q.(type) {
 	case *x:
@@ -212,7 +212,7 @@ func (t *Tree) find(q interface{}, k []byte) (i int, ok bool) {
 
 // First returns the first item of the tree in the key collating order, or
 // (zero-value, zero-value) if the tree is empty.
-func (t *Tree) First() (k []byte, v []byte) {
+func (t *Tree) First() (k uint, v Doc) {
 	if q := t.first; q != nil {
 		q := &q.d[0]
 		k, v = q.k, q.v
@@ -222,7 +222,7 @@ func (t *Tree) First() (k []byte, v []byte) {
 
 // Get returns the value associated with k and true if it exists. Otherwise Get
 // returns (zero-value, false).
-func (t *Tree) Get(k []byte) (v []byte, ok bool) {
+func (t *Tree) Get(k uint) (v Doc, ok bool) {
 	q := t.r
 	if q == nil {
 		return
@@ -248,7 +248,7 @@ func (t *Tree) Get(k []byte) (v []byte, ok bool) {
 	}
 }
 
-func (t *Tree) insert(q *d, i int, k []byte, v []byte) *d {
+func (t *Tree) insert(q *d, i int, k uint, v Doc) *d {
 	t.ver++
 	c := q.c
 	if i < c {
@@ -263,7 +263,7 @@ func (t *Tree) insert(q *d, i int, k []byte, v []byte) *d {
 
 // Last returns the last item of the tree in the key collating order, or
 // (zero-value, zero-value) if the tree is empty.
-func (t *Tree) Last() (k []byte, v []byte) {
+func (t *Tree) Last() (k uint, v Doc) {
 	if q := t.last; q != nil {
 		q := &q.d[q.c-1]
 		k, v = q.k, q.v
@@ -276,7 +276,7 @@ func (t *Tree) Len() int {
 	return t.c
 }
 
-func (t *Tree) overflow(p *x, q *d, pi, i int, k []byte, v []byte) {
+func (t *Tree) overflow(p *x, q *d, pi, i int, k uint, v Doc) {
 	t.ver++
 	l, r := p.siblings(pi)
 
@@ -306,7 +306,7 @@ func (t *Tree) overflow(p *x, q *d, pi, i int, k []byte, v []byte) {
 // Seek returns an Enumerator positioned on an item such that k >= item's key.
 // ok reports if k == item.key The Enumerator's position is possibly after the
 // last item in the tree.
-func (t *Tree) Seek(k []byte) (e *Enumerator, ok bool) {
+func (t *Tree) Seek(k uint) (e *Enumerator, ok bool) {
 	q := t.r
 	if q == nil {
 		e = btEPool.get(nil, false, 0, k, nil, t, t.ver)
@@ -357,7 +357,7 @@ func (t *Tree) SeekLast() (e *Enumerator, err error) {
 }
 
 // Set sets the value associated with k.
-func (t *Tree) Set(k []byte, v []byte) {
+func (t *Tree) Set(k uint, v Doc) {
 	//dbg("--- PRE Set(%v, %v)\n%s", k, v, t.dump())
 	//defer func() {
 	//	dbg("--- POST\n%s\n====\n", t.dump())
@@ -419,14 +419,14 @@ func (t *Tree) Set(k []byte, v []byte) {
 //
 // 	tree.Set(k, v) call conceptually equals calling
 //
-// 	tree.Put(k, func([]byte, bool){ return v, true })
+// 	tree.Put(k, func(uint, bool){ return v, true })
 //
 // modulo the differing return values.
-func (t *Tree) Put(k []byte, upd func(oldV []byte, exists bool) (newV []byte, write bool)) (oldV []byte, written bool) {
+func (t *Tree) Put(k uint, upd func(oldV Doc, exists bool) (newV Doc, write bool)) (oldV Doc, written bool) {
 	pi := -1
 	var p *x
 	q := t.r
-	var newV []byte
+	var newV Doc
 	if q == nil {
 		// new KV pair in empty tree
 		newV, written = upd(newV, false)
@@ -488,7 +488,7 @@ func (t *Tree) Put(k []byte, upd func(oldV []byte, exists bool) (newV []byte, wr
 	}
 }
 
-func (t *Tree) split(p *x, q *d, pi, i int, k []byte, v []byte) {
+func (t *Tree) split(p *x, q *d, pi, i int, k uint, v Doc) {
 	t.ver++
 	r := btDPool.Get().(*d)
 	if q.n != nil {

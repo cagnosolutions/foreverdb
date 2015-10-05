@@ -1,4 +1,4 @@
-package index
+package doc
 
 import "io"
 
@@ -14,7 +14,7 @@ type Enumerator struct {
 	err error
 	hit bool
 	i   int
-	k   []byte
+	k   uint
 	q   *d
 	t   *Tree
 	ver int64
@@ -30,7 +30,7 @@ func (e *Enumerator) Close() {
 // Next returns the currently enumerated item, if it exists and moves to the
 // next item in the key collation order. If there is no item to return, err ==
 // io.EOF is returned.
-func (e *Enumerator) Next() (k []byte, v []byte, err error) {
+func (e *Enumerator) Next() (k uint, v Doc, err error) {
 	if err = e.err; err != nil {
 		return
 	}
@@ -84,7 +84,7 @@ func (e *Enumerator) next() error {
 // Prev returns the currently enumerated item, if it exists and moves to the
 // previous item in the key collation order. If there is no item to return, err
 // == io.EOF is returned.
-func (e *Enumerator) Prev() (k []byte, v []byte, err error) {
+func (e *Enumerator) Prev() (k uint, v Doc, err error) {
 	if err = e.err; err != nil {
 		return
 	}

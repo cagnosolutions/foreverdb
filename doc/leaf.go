@@ -1,4 +1,4 @@
-package index
+package doc
 
 // data page "leaf node"
 type d struct {
@@ -10,8 +10,8 @@ type d struct {
 
 // data page (leaf nodes's) data
 type de struct {
-	k []byte
-	v []byte
+	k uint
+	v Doc
 }
 
 func (l *d) mvL(r *d, c int) {

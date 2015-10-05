@@ -1,4 +1,4 @@
-package index
+package doc
 
 // index page "inner node"
 type x struct {
@@ -9,7 +9,7 @@ type x struct {
 // index page's (inner node's) key
 type xe struct {
 	ch interface{}
-	k  []byte
+	k  uint
 }
 
 func newX(ch0 interface{}) *x {
@@ -28,7 +28,7 @@ func (q *x) extract(i int) {
 	}
 }
 
-func (q *x) insert(i int, k []byte, ch interface{}) *x {
+func (q *x) insert(i int, k uint, ch interface{}) *x {
 	c := q.c
 	if i < c {
 		q.x[c+1].ch = q.x[c].ch
